@@ -1,0 +1,38 @@
+name: Maxmind geoip updater databses
+
+on:
+  schedule:
+  - cron: '30 10 * * 2'
+  - cron: '30 10 * * 5'
+  
+  workflow_dispatch:
+
+jobs:
+  update-files:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Update lists
+        env:
+          MAXMIND_AUTH_DETAILS: ${{ secrets.MAXMIND_AUTH_DETAILS }}
+        run: ./scripts/maxmind-updater.py
+          
+      - name: Commit files if changed
+        run: |
+          git add -N .
+
+          if [ -z "$(git ls-files --modified maxmind-*/)" ]; then
+              echo "[+] No files were changed"
+          else
+              echo "[+] Files were changed! Pushing changed..."
+              git pull
+              git stage maxmind-*/
+              git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+              git config --local user.email "example@github.com"
+              git config --local user.name "GitHub Action"
+              git commit -m "[Github Action] Automated lists update."
+              git push
+          fi
