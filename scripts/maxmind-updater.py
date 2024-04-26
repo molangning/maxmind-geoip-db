@@ -85,20 +85,20 @@ def download_all():
             print(f"[!] Maxmind gave us a filename with a slash ({filename})")
             exit(2)
 
-        file_location = os.path.join(COMPRESSED_BASE_PATH, "latest", filename)
+        file_location = os.path.join(COMPRESSED_BASE_PATH, filename)
 
         if os.path.isfile(file_location) and hashlib.sha256(open(file_location, "rb").read()).hexdigest() == resp.content.split(b" ")[0].strip().decode():
             print(f"[+] {filename} exists and hash matches.")
             time.sleep(0.2)
             continue
 
-        create_if_not_exists(os.path.join(COMPRESSED_BASE_PATH, "latest"))
+        create_if_not_exists(os.path.join(COMPRESSED_BASE_PATH))
         file_locations.append(file_location)
         downloader(i, file_location)
         
         time.sleep(0.5)
 
-    create_if_not_exists(os.path.join(COMPRESSED_BASE_PATH, "latest"))
+    create_if_not_exists(os.path.join(COMPRESSED_BASE_PATH))
 
     for file in file_locations:
         if file.endswith(".zip"):
@@ -114,7 +114,7 @@ def download_all():
                     print(f"[!] Maxmind gave us a zip file with a slash ({output_dir})")
                     break
 
-                output_dir = os.path.join(UNCOMPRESSED_BASE_PATH, "latest", output_dir)
+                output_dir = os.path.join(UNCOMPRESSED_BASE_PATH, output_dir)
                 create_if_not_exists(output_dir)
                 zip.extract(zipped_file.filename, output_dir)
 
@@ -134,7 +134,7 @@ def download_all():
                     print(f"[!] Maxmind gave us a gunzipped file with a slash ({output_dir})")
                     break
 
-                output_dir = os.path.join(UNCOMPRESSED_BASE_PATH, "latest", output_dir)
+                output_dir = os.path.join(UNCOMPRESSED_BASE_PATH, output_dir)
                 create_if_not_exists(output_dir)
                 gzip.extract(gzipped_file, output_dir, filter="data")
             
