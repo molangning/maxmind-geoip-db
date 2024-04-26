@@ -85,20 +85,19 @@ def download_all():
             print(f"[!] Maxmind gave us a filename with a slash ({filename})")
             exit(2)
 
-        file_location = os.path.join(COMPRESSED_BASE_PATH, filename)
+        file_date = filename.rsplit("_", 1)[-1].split(".", 1)[0]
+        file_location = os.path.join(COMPRESSED_BASE_PATH, file_date, filename)
 
         if os.path.isfile(file_location) and hashlib.sha256(open(file_location, "rb").read()).hexdigest() == resp.content.split(b" ")[0].strip().decode():
             print(f"[+] {filename} exists and hash matches.")
             time.sleep(0.2)
             continue
 
-        create_if_not_exists(os.path.join(COMPRESSED_BASE_PATH))
+        create_if_not_exists(os.path.join(COMPRESSED_BASE_PATH, file_date))
         file_locations.append(file_location)
         downloader(i, file_location)
         
         time.sleep(0.5)
-
-    create_if_not_exists(os.path.join(COMPRESSED_BASE_PATH))
 
     for file in file_locations:
         if file.endswith(".zip"):
