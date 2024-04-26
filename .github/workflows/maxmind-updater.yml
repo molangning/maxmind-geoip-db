@@ -18,7 +18,7 @@ jobs:
       - name: Update lists
         env:
           MAXMIND_AUTH_DETAILS: ${{ secrets.MAXMIND_AUTH_DETAILS }}
-        run: ./scripts/maxmind-updater.py
+        run: /usr/bin/env python3 -u ./scripts/maxmind-updater.py
           
       - name: Commit files if changed
         run: |
